@@ -25,13 +25,19 @@ def CreateFile(phasesList, picturesList, number, fileName):
         num=phases_num[i]
         #print(num)
         #print(phasesList[num])
+        fileWriter.write('<font size=4 color="black">')
         fileWriter.write(phasesList[num])
-        fileWriter.write('\r\n')
+        fileWriter.write('</font>')
+        fileWriter.write('<br/>\r\n')
         if i == number//2 - 1:
+            fileWriter.write('![](')
             fileWriter.write(picturesList[picture_num[0]])
-            fileWriter.write('\r\n')
+            fileWriter.write(')')
+            fileWriter.write('<br/>\r\n')
+    fileWriter.write('![](')
     fileWriter.write(picturesList[picture_num[1]])
-    fileWriter.write('\r\n')
+    fileWriter.write(')')
+    fileWriter.write('<br/>\r\n')
     fileWriter.close()
     #picture_list = range(len(phaseseList))
 
