@@ -42,19 +42,20 @@ def CreateFile(phasesList, picturesList, number, fileName):
     #picture_list = range(len(phaseseList))
 
 if __name__ == "__main__":
-    if len(sys.argv) < 4:
-        print('python3 server.py phases pictures product')
+    if len(sys.argv) < 2:
+        print('python3 server.py {directory}')
+        print('eg: python3 server.py ./')
         sys.exit()
     p=re.compile('{split}\n',re.S);
-    f= open(sys.argv[1],'r',encoding='utf8')
+    f= open(sys.argv[1]+'/phases','r',encoding='utf8')
     fileContent = f.read()
     phasesList=p.split(fileContent)
     f.close()
-    f= open(sys.argv[2],'r',encoding='utf8')
+    f= open(sys.argv[1]+'/pictures','r',encoding='utf8')
     fileContent = f.read()
     picturesList=p.split(fileContent)
     f.close()
-    f= open(sys.argv[3],'r',encoding='utf8')
+    f= open(sys.argv[1]+'/product','r',encoding='utf8')
     fileContent = f.read()
     productList=p.split(fileContent)
     f.close()
