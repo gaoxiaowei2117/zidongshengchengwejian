@@ -20,6 +20,15 @@ def CreateFile(phasesList, picturesList, number, fileName):
     picture_list = range(len(picturesList) - 1)
     picture_num = random.sample(picture_list, 2)
 
+    fileWriter.write('<font size=4 color="black">')
+    fileWriter.write(phasesList[0])
+    fileWriter.write('</font>')
+    fileWriter.write('<br/>\r\n')
+    totalLen = (len(phasesList[0]))
+    fileWriter.write('![](')
+    fileWriter.write(picturesList[picture_num[0]])
+    fileWriter.write(')')
+    fileWriter.write('<br/>\r\n')
     #for num in phases_num :
     for i in range(0, number) :
         num=phases_num[i]
@@ -29,11 +38,9 @@ def CreateFile(phasesList, picturesList, number, fileName):
         fileWriter.write(phasesList[num])
         fileWriter.write('</font>')
         fileWriter.write('<br/>\r\n')
-        if i == number//2 - 1:
-            fileWriter.write('![](')
-            fileWriter.write(picturesList[picture_num[0]])
-            fileWriter.write(')')
-            fileWriter.write('<br/>\r\n')
+        totalLen = totalLen + (len(phasesList[num]))
+        if totalLen>800:
+            break
     fileWriter.write('![](')
     fileWriter.write(picturesList[picture_num[1]])
     fileWriter.write(')')
