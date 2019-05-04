@@ -26,7 +26,8 @@ mySession = requests.session()
 mySession.cookies = cookielib.LWPCookieJar(filename = "Cookie.txt")
 
 if __name__ == "__main__":
-    f= open('./0.txt','r')
+    #f= open('./0.txt','r')
+    f= open('./files/0.txt','r')
     fileContent = f.read()
     f.close()
     #print(fileContent)
