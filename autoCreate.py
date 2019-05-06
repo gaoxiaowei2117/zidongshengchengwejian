@@ -41,7 +41,7 @@ def CreateFile(phasesList, picturesList, number, fileName):
         fileWriter.write(phasesList[num])
         fileWriter.write('</span></p>')
         totalLen = totalLen + (len(phasesList[num]))
-        if totalLen>900:
+        if totalLen>1000:
             break
     fileWriter.write('<p style=\\"margin-bottom: 9px; color: rgb(115, 115, 115); font-family: &quot;Helvetica Neue&quot;, Helvetica, &quot;Hiragino Sans GB&quot;, Arial, sans-serif; font-size: 13px;\\"><img src=\\"')
     fileWriter.write(picturesList[picture_num[1]])
