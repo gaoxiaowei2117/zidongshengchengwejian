@@ -7,7 +7,7 @@ import random
 import codecs
 import requests
 import sys
-
+from get_verificatio_code import get_captcha_code
 
 # python2 和 python3的兼容代码
 try:
@@ -19,20 +19,23 @@ except:
     import http.cookiejar as cookielib
     print("user cookielib in python3.")
 
-# session代表某一次连接
-mySession = requests.session()
-# 因为原始的session.cookies
-# 没有save()方法，所以需要用到cookielib中的方法LWPCookieJar，这个类实例化的cookie对象，就可以直接调用save方法。
-mySession.cookies = cookielib.LWPCookieJar(filename = "Cookie.txt")
-
-if __name__ == "__main__":
+def send_file_code(path):
+    # session代表某一次连接
+    mySession = requests.session()
+    # 因为原始的session.cookies
+    # 没有save()方法，所以需要用到cookielib中的方法LWPCookieJar，这个类实例化的cookie对象，就可以直接调用save方法。
+    mySession.cookies = cookielib.LWPCookieJar(filename = path+"Cookie.txt")
     #f= open('./0.txt','r')
     f= open('./files/0.txt','r')
     fileContent = f.read()
     f.close()
     #print(fileContent)
-    f= open('./Authorization.txt','r')
+    f= open(path+'/Authorization.txt','r')
     authorization = (f.readline()).rstrip('\n')
+    f.close()
+    #print(authorization)
+    f= open(path+'/User_Agent.txt','r')
+    user_agent = (f.readline()).rstrip('\n')
     f.close()
     #print(authorization)
     url='http://member.91huoke.com/api/member/article'
@@ -40,7 +43,7 @@ if __name__ == "__main__":
              'Connection': 'keep-alive',
              'Accept': 'application/json, text/plain, */*',
              'Origin': 'http://member.91huoke.com',
-             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36',
+             'User-Agent': user_agent,
              'Authorization': authorization,
              'Content-Type': 'application/json;charset=UTF-8',
              'Referer': 'http://member.91huoke.com/',
@@ -48,6 +51,15 @@ if __name__ == "__main__":
              'Accept-Language': 'zh-CN,zh;q=0.8',
             }
     #d=requests.post(url,data=payload,headers=headers)
-    d=mySession.post(url,data=fileContent,headers=headers)
-    print(d)
-    print(d.text)
+    response=mySession.post(url,data=fileContent,headers=headers).json()
+    print(response)
+    #print(d.text)
+    '''
+    status =  response.get('status')
+    if status == 401:
+        get_captcha_code(user_agent)
+        print("haha")
+    '''
+
+if __name__ == "__main__":
+    send_file_code(sys.argv[1])
