@@ -4,5 +4,5 @@ do
 	python3 autoCreate.py $1
 	python autoSend.py ./
 	echo $i
-	sleep 20
+	sleep 2
 done
