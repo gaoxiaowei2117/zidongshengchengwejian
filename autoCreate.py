@@ -50,10 +50,13 @@ def CreateFile(phasesList, picturesList, number, fileName):
     #picture_list = range(len(phaseseList))
 
 def TitleAndKeys(path):
-    count = len(open(path+'first',encoding='utf8').readlines())#获取行数
-    firstnum=random.randrange(1,count+1, 1)#生成随机行数
-    first=linecache.getline(path+'first',firstnum).rstrip('\n')#随机读取某行
-    #print(first)
+    if os.path.exists(path+'first'):
+        count = len(open(path+'first',encoding='utf8').readlines())#获取行数
+        firstnum=random.randrange(1,count+1, 1)#生成随机行数
+        first=linecache.getline(path+'first',firstnum).rstrip('\n')#随机读取某行
+    else:
+        first=""
+    print(first)
     count = len(open(path+'second',encoding='utf8').readlines())#获取行数
     secondnum=random.randrange(1,count+1, 1)#生成随机行数
     second=linecache.getline(path+'second',secondnum).rstrip('\n')#随机读取某行
@@ -71,7 +74,7 @@ def TitleAndKeys(path):
     print(title,key1,key2,key3)
     return (title,key1,key2,key3)
 
-if __name__ == "__main__":
+if __name__ == "__main__": 
     if len(sys.argv) < 2:
         print('python3 server.py {directory}')
         print('eg: python3 server.py ./')

@@ -1,5 +1,5 @@
 #!/bin/bash
-for ((i=1; i<=7; i++))
+for ((i=1; i<=3; i++))
 do
 	python3 autoCreate.py $1
 	python autoSend.py $2
