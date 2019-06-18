@@ -79,7 +79,8 @@ if __name__ == "__main__":
         print('python3 server.py {directory}')
         print('eg: python3 server.py ./')
         sys.exit()
-    p=re.compile('{split}\n',re.S);
+    #p=re.compile(\n',re.S);
+    p=re.compile('\n',re.S);
     f= open(sys.argv[1]+'/phases','r',encoding='utf8')
     fileContent = f.read()
     phasesList=p.split(fileContent)
