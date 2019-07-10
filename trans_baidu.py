@@ -4,7 +4,17 @@ from bs4 import BeautifulSoup
 import execjs
 from aip import AipNlp
 
-#""" 你的 APPID AK SK """
+import http.client
+#import md5
+import hashlib
+import urllib
+import random
+import time
+
+appid = '20190710000316607' #你的appid
+secretKey = 'Z3j1AehLpDY_30cVoVHn' #你的密钥
+
+""" 你的 APPID AK SK """
 #APP_ID = '16748275'
 #API_KEY = '53e5jBb3v5DFlZUNv3SDAUsl'
 #SECRET_KEY = 'p4nBF0Ai9gGGitWqdHhzBe4Gmx8jVfyW'
@@ -142,13 +152,51 @@ def dnnlm(text):
     dnn = client.dnnlm(text)
     return dnn["ppl"]
 
+def translate_baidu(fromLang, toLang, q):
+    httpClient = None
+    myurl = '/api/trans/vip/translate'
+    #q = '苹果'
+    #fromLang = 'zh'
+    #toLang = 'en'
+    salt = random.randint(32768, 65536)
+    
+    sign = appid+q+str(salt)+secretKey
+    #m1 = md5.new()
+    m1 = hashlib.md5()
+    m1.update(sign.encode("utf8"))
+    sign = m1.hexdigest()
+    myurl = myurl+'?appid='+appid+'&q='+urllib.parse.quote(q)+'&from='+fromLang+'&to='+toLang+'&salt='+str(salt)+'&sign='+sign
+     
+    try:
+        httpClient = http.client.HTTPConnection('api.fanyi.baidu.com')
+        httpClient.request('GET', myurl)
+     
+        #response是HTTPResponse对象
+        response = httpClient.getresponse()
+        json_direct=json.loads(response.read().decode("utf8"))
+        print(json_direct)
+        res=(json_direct["trans_result"][0].get('dst'))
+        return res
+    except Exception as e:
+        print(e)
+    finally:
+        if httpClient:
+            httpClient.close()
+    
 
 text = "快速排名可以说是利用搜索引擎漏洞以及一些辅助工具使特定关键词快速快速排名在搜索引擎顶端的一个过程或技术。 正所谓“马无夜草不肥，人无横财不富”，搜索引擎优化是一个及其漫长的过程，平均排名时间大于6个月以上，但有时候我们经常在网上看到一些网站数天，数周就能获得大量的关键词排名，那么这是怎么做到的 鉴于博主本人并不擅长快排或者黑帽方面的知识，所以本文只是结合个人使用快排的一些心得和经历给大家做一个简单的科普，本博客也不会提供快排业务。"
 
 if __name__ == '__main__':
     js=Py4Js()
-    yw = translate('zh-en',text)
+    #yw = translate('zh-en',text)
+    #res_enzh = translate('en-zh',yw)
+    #print ("原文:",text)
+    #print ("英文:",yw)
+    #print ("伪原创:",res_enzh)
+    yw=translate_baidu('zh', 'en', text)
     res_enzh = translate('en-zh',yw)
+    #time.sleep(1)
+    #res_enzh = translate_baidu('en', 'zh', yw)
     print ("原文:",text)
     print ("英文:",yw)
     print ("伪原创:",res_enzh)
