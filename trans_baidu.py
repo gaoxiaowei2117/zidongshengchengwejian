@@ -14,6 +14,10 @@ import time
 appid = '20190710000316607' #你的appid
 secretKey = 'Z3j1AehLpDY_30cVoVHn' #你的密钥
 
+YUANWEN="./files/yuanwen.txt"
+WAIWEN="./files/waiwen.txt"
+YUANCHUANG="./files/yuanchuang.txt"
+
 """ 你的 APPID AK SK """
 #APP_ID = '16748275'
 #API_KEY = '53e5jBb3v5DFlZUNv3SDAUsl'
@@ -100,7 +104,9 @@ def buildUrl(text,tk,language):
     return baseUrl
 
 
-def translate(language,text):
+#def translate(language,text):
+def translate(fromLang, toLang, q):
+    language=fromLang+'-'+toLang
     header={
         'authority':'translate.google.cn',
         'method':'GET',
@@ -113,7 +119,7 @@ def translate(language,text):
         'user-agent':'Mozilla/5.0 (Windows NT 10.0; WOW64)  AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36',
         'x-client-data':'CIa2yQEIpbbJAQjBtskBCPqcygEIqZ3KAQioo8oBGJGjygE='
     }
-    url=buildUrl(text,js.getTk(text),language)
+    url=buildUrl(q,js.getTk(q),language)
     res=''
     try:
         r=requests.get(url)
@@ -123,7 +129,7 @@ def translate(language,text):
             # 如果我们文本输错，提示你是不是要找xxx的话，那么重新把xxx正确的翻译之后返回
             try:
                 correctText=result[7][0].replace('<b><i>',' ').replace('</i></b>','')
-                print(correctText)
+                #print(correctText)
                 correctUrl=buildUrl(correctText,js.getTk(correctText),language)
                 correctR=requests.get(correctUrl)
                 newResult=json.loads(correctR.text)
@@ -141,10 +147,10 @@ def translate(language,text):
                     res += r[0]
     except Exception as e:
         res=''
-        print(url)
-        print("翻译"+text+"失败")
-        print("错误信息:")
-        print(e)
+        #print(url)
+        #print("翻译"+q+"失败")
+        #print("错误信息:")
+        #print(e)
     finally:
         return res
 
@@ -174,30 +180,62 @@ def translate_baidu(fromLang, toLang, q):
         #response是HTTPResponse对象
         response = httpClient.getresponse()
         json_direct=json.loads(response.read().decode("utf8"))
-        print(json_direct)
-        res=(json_direct["trans_result"][0].get('dst'))
+        #print(json_direct)
+        #print(type(json_direct))
+        res=''
+        for i in range(0, len(json_direct["trans_result"])):
+            res=res+(json_direct["trans_result"][i].get('dst'))+"\n"
         return res
     except Exception as e:
+        res=''
         print(e)
     finally:
         if httpClient:
             httpClient.close()
+        return res
     
+def TransFile(srcFile, dstFile, firstPhase=''):
+    f= open(srcFile,'r',encoding='utf8')
+    srcFileContent = f.read()
+    f.close()
+    #print("原文:",srcFileContent)
 
-text = "快速排名可以说是利用搜索引擎漏洞以及一些辅助工具使特定关键词快速快速排名在搜索引擎顶端的一个过程或技术。 正所谓“马无夜草不肥，人无横财不富”，搜索引擎优化是一个及其漫长的过程，平均排名时间大于6个月以上，但有时候我们经常在网上看到一些网站数天，数周就能获得大量的关键词排名，那么这是怎么做到的 鉴于博主本人并不擅长快排或者黑帽方面的知识，所以本文只是结合个人使用快排的一些心得和经历给大家做一个简单的科普，本博客也不会提供快排业务。"
+    f=open(dstFile,'w',encoding='utf8')
+    if(len(firstPhase)!=0):
+        f.write(firstPhase)
+        f.write('\n')
 
+    tempContent=translate('zh', 'en', srcFileContent)
+    if(len(tempContent)==0):
+        f.write(srcFileContent)
+        return -1
+    #print("译文:",tempContent)
+    #time.sleep(1)
+    dstFileContent=translate_baidu('en', 'zh', tempContent)
+    if(len(dstFileContent)==0):
+        f.write(srcFileContent)
+        return -1
+    #print("伪原创:",dstFileContent)
+    f.write(dstFileContent)
+    f.close()
+    return 0
+
+
+text = '快速排名可以说是利用搜索引擎漏洞以及一些辅助工具使特定关键词快速快速排名在搜索引擎顶端的一个过程或技术。 正所谓“马无夜草不肥，人无横财不富”，搜索引擎优化是一个及其漫长的过程，平均排名时间大于6个月以上，但有时候我们经常在网上看到一些网站数天，数周就能获得大量的关键词排名，那么这是怎么做到的 鉴于博主本人并不擅长快排或者黑帽方面的知识，所以本文只是结合个人使用快排的一些心得和经历给大家做一个简单的科普，本博客也不会提供快排业务。\n 测试是不是能够换行'
+
+js=Py4Js()
 if __name__ == '__main__':
-    js=Py4Js()
-    #yw = translate('zh-en',text)
-    #res_enzh = translate('en-zh',yw)
+    #js=Py4Js()
+    #yw = translate('zh','en',text)
     #print ("原文:",text)
     #print ("英文:",yw)
     #print ("伪原创:",res_enzh)
-    yw=translate_baidu('zh', 'en', text)
-    res_enzh = translate('en-zh',yw)
+    #yw=translate_baidu('zh', 'en', text)
+    #res_enzh = translate('en','zh',yw)
     #time.sleep(1)
     #res_enzh = translate_baidu('en', 'zh', yw)
-    print ("原文:",text)
-    print ("英文:",yw)
-    print ("伪原创:",res_enzh)
+    #print ("原文:",text)
+    #print ("英文:",yw)
+    #print ("伪原创:",res_enzh)
     #print (dnnlm(text),dnnlm(res_enzh))
+    TransFile(YUANWEN, YUANCHUANG, text)

@@ -4,10 +4,13 @@ import json
 import os
 import re
 import random
-import codecs
+from codecs import open
 import requests
 import sys
 from get_verificatio_code import get_captcha_code
+import sys
+#reload(sys)
+#sys.setdefaultencoding("utf-8")
 
 # python2 和 python3的兼容代码
 try:
@@ -26,8 +29,9 @@ def send_file_code(path):
     # 没有save()方法，所以需要用到cookielib中的方法LWPCookieJar，这个类实例化的cookie对象，就可以直接调用save方法。
     mySession.cookies = cookielib.LWPCookieJar(filename = path+"Cookie.txt")
     #f= open('./0.txt','r')
-    f= open('./files/0.txt','r')
+    f= open('./files/0.txt','r',encoding='utf8')
     fileContent = f.read()
+    #print(fileContent)
     f.close()
     #print(fileContent)
     f= open(path+'/Authorization.txt','r')
@@ -51,15 +55,18 @@ def send_file_code(path):
              'Accept-Language': 'zh-CN,zh;q=0.8',
             }
     #d=requests.post(url,data=payload,headers=headers)
-    response=mySession.post(url,data=fileContent,headers=headers).json()
-    print(response)
-    #print(d.text)
+    response=mySession.post(url,data=fileContent.encode('utf-8'),headers=headers).json()
+    #print(json.dumps(response))
+    #print(json.dumps(response).encode('utf-8').decode('unicode_escape'))
+    print(json.dumps(response,ensure_ascii=False))
+    #printond.text)
     '''
     status =  response.get('status')
     if status == 401:
         get_captcha_code(user_agent)
         print("haha")
     '''
+    return response
 
 if __name__ == "__main__":
     send_file_code(sys.argv[1])
