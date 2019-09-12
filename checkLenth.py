@@ -15,7 +15,7 @@ def CheckFile(phasesList, fileName):
     for paraIndex in range(len(phasesList) - 1) :
         print(paraIndex)
         print(phasesList[paraIndex])
-        if len(phasesList[paraIndex])<=150:
+        if len(phasesList[paraIndex])<150:
             #fileWriter.write(paraIndex, len(phasesList[paraIndex]), phasesList[paraIndex]) 
             fileWriter.write(str(paraIndex+1)+',') 
             fileWriter.write(str(len(phasesList[paraIndex]))+',') 
@@ -25,8 +25,8 @@ def CheckFile(phasesList, fileName):
 
 if __name__ == "__main__": 
     if len(sys.argv) < 2:
-        print('python3 server.py {directory}')
-        print('eg: python3 server.py ./')
+        print('python3 %s {directory}'%argv[0])
+        print('eg: python3 %s ./test'%argv[0])
         sys.exit()
     #p=re.compile(\n',re.S);
     p=re.compile('\n',re.S);

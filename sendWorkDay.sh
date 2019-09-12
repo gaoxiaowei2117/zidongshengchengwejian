@@ -8,6 +8,7 @@ cd $WORK_PATH
 ./auto_trans.sh ./changhe/jisuban/ ./changhe/1 >> $LOG_FILE
 ./auto_trans.sh ./haitang/ ./haitang/1 >> $LOG_FILE
 ./auto_trans.sh ./haitang/ ./haitang/1 >> $LOG_FILE
-./auto.sh ./kangda/jiaquanjiance/ ./kangda/jiaquanjiance/2 >> $LOG_FILE
-./auto_trans.sh ./yishang/ yishang/1/ >> $LOG_FILE
-./auto_trans.sh ./aishangjia/ aishangjia/1 >> $LOG_FILE
+./auto_trans.sh ./kangda/jiaquanjiance/ ./kangda/jiaquanjiance/2 >> $LOG_FILE
+#./auto_trans.sh ./yishang/ yishang/1/ >> $LOG_FILE
+./auto_trans.sh ./aishangjia/ ./aishangjia/1 >> $LOG_FILE
+#./auto.sh ./woke/ woke/1/ >> $LOG_FILE
