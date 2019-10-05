@@ -7,6 +7,8 @@ import random
 import codecs
 import linecache
 import time
+#from scripts import operate_MySQL
+from scripts.operate_MySQL import MyMysql
 from trans_baidu import translate_baidu
 from trans_baidu import translate
 from trans_baidu import TransFile
@@ -98,12 +100,16 @@ def TitleAndKeys(path):
     return (title,key1,key2,key3)
 
 def AutoTransAndCreate(argv_1):
-    #p=re.compile(\n',re.S);
+    db = MyMysql(myHost='localhost',myUser='root', myPasswd='Nc480s><ltyyz', myPort=3306, myDB="91Creater")
+    phasesList = list(db.SelectPassages('1', '1'))
+    print(type(phasesList))
+
     p=re.compile('\n',re.S);
-    f= open(argv_1+'/phases','r',encoding='utf8')
-    fileContent = f.read()
-    phasesList=p.split(fileContent)
-    f.close()
+    #f= open(argv_1+'/phases','r',encoding='utf8')
+    #fileContent = f.read()
+    #phasesList=p.split(fileContent)
+    #f.close()
+    #print(type(phasesList))
     f= open(argv_1+'/pictures','r',encoding='utf8')
     fileContent = f.read()
     picturesList=p.split(fileContent)
