@@ -12,7 +12,7 @@ from scripts.operate_MySQL import MyMysql
 from trans_baidu import translate_baidu
 from trans_baidu import translate
 from trans_baidu import TransFile
-from autoSend import send_file_code
+from autoSend import send_file_code_fromDB
 
 sys.stdout=codecs.getwriter('utf8')(sys.stdout.detach())
 
@@ -20,6 +20,8 @@ BASE_DIR="/home/tools/Graphical/"
 YUANWEN="./files/yuanwen.txt"
 WAIWEN="./files/waiwen.txt"
 YUANCHUANG="./files/yuanchuang.txt"
+
+db = MyMysql(myHost='localhost',myUser='root', myPasswd='Nc480s><ltyyz', myPort=3306, myDB="91Creater")
 
 def SelectPhases(phasesList, number):
     fileWriter=open(YUANWEN,'w',encoding='utf8')
@@ -74,35 +76,24 @@ def CreateFile(phasesList, picturesList, fileName):
     fileWriter.close()
     #picture_list = range(len(phasesList))
 
-def TitleAndKeys(path):
-    if os.path.exists(path+'first'):
-        count = len(open(path+'first',encoding='utf8').readlines())#获取行数
-        firstnum=random.randrange(1,count+1, 1)#生成随机行数
-        first=linecache.getline(path+'first',firstnum).rstrip('\n')#随机读取某行
-    else:
-        first=""
-    print(first)
-    count = len(open(path+'second',encoding='utf8').readlines())#获取行数
-    secondnum=random.randrange(1,count+1, 1)#生成随机行数
-    second=linecache.getline(path+'second',secondnum).rstrip('\n')#随机读取某行
-    #print(second)
-    count = len(open(path+'third',encoding='utf8').readlines())#获取行数
-    thirdnum_1=random.randrange(1,count+1, 1)#生成随机行数
-    third_1=linecache.getline(path+'third',thirdnum_1).rstrip('\n')#随机读取某行
-    thirdnum_2=random.randrange(1,count+1, 1)#生成随机行数
-    third_2=linecache.getline(path+'third',thirdnum_2).rstrip('\n')#随机读取某行
-    #print(third)
-    title = first+second+third_1
-    key1 = first+second+third_1
-    key2 = first+second
-    key3 = first+second+third_2
+def TitleAndKeys(taskRecord):
+    first = random.sample(taskRecord[4].split(","), 1)
+    second = random.sample(taskRecord[5].split(","), 1)
+    third_1 = random.sample(taskRecord[6].split(","), 1)
+    third_2 = random.sample(taskRecord[6].split(","), 1)
+    
+    title = ''.join(first+second+third_1)
+    key1 = ''.join(first+second+third_1)
+    key2 = ''.join(first+second)
+    key3 = ''.join(first+second+third_2)
     print(title,key1,key2,key3)
     return (title,key1,key2,key3)
 
-def AutoTransAndCreate(argv_1):
-    db = MyMysql(myHost='localhost',myUser='root', myPasswd='Nc480s><ltyyz', myPort=3306, myDB="91Creater")
-    phasesList = list(db.SelectPassages('1', '1'))
+def AutoTransAndCreate(taskRecord):
+    phasesList = list(db.SelectPassages(str(taskRecord[1]), str(taskRecord[2])))
     print(type(phasesList))
+    picturesList = db.SelectPicture(str(taskRecord[1]), str(taskRecord[2]))
+    productList = db.SelectProduct(str(taskRecord[1]), str(taskRecord[2]))
 
     p=re.compile('\n',re.S);
     #f= open(argv_1+'/phases','r',encoding='utf8')
@@ -110,14 +101,14 @@ def AutoTransAndCreate(argv_1):
     #phasesList=p.split(fileContent)
     #f.close()
     #print(type(phasesList))
-    f= open(argv_1+'/pictures','r',encoding='utf8')
-    fileContent = f.read()
-    picturesList=p.split(fileContent)
-    f.close()
-    f= open(argv_1+'/product','r',encoding='utf8')
-    fileContent = f.read()
-    productList=p.split(fileContent)
-    f.close()
+    #f= open(argv_1+'/pictures','r',encoding='utf8')
+    #fileContent = f.read()
+    #picturesList=p.split(fileContent)
+    #f.close()
+    #f= open(argv_1+'/product','r',encoding='utf8')
+    #fileContent = f.read()
+    #productList=p.split(fileContent)
+    #f.close()
     
     #　选取随机段落
     SelectPhases(phasesList, 15)
@@ -132,7 +123,7 @@ def AutoTransAndCreate(argv_1):
     CreateFile(phasesYuanChuangList, picturesList, fileName)
 
     #　替换关键词
-    title,key1,key2,key3=TitleAndKeys(argv_1)
+    title,key1,key2,key3=TitleAndKeys(taskRecord)
     f= open(fileName,'r',encoding='utf8')
     alllines=f.readlines()
     f.close()
@@ -152,21 +143,28 @@ def AutoTransAndCreate(argv_1):
     f.close()
 
 if __name__ == "__main__": 
-    if len(sys.argv) < 2:
-        print('python3 server.py {directory}')
-        print('eg: python3 server.py ./')
-        sys.exit()
-    i = 0
-    while i<20 :
-        AutoTransAndCreate(sys.argv[1])
-        ret=send_file_code(sys.argv[2])
-        if ret['status']==200 :
-            print('Send file succeed. status:%d'%ret['status'])
-            break
-        if ret['status']==500 :
-            if '每日可发文上限为' in ret['msg']:
-                print('Exceeding the maximum number of transmissions. status:%d'%ret['status'])
+#    if len(sys.argv) < 2:
+#        print('python3 server.py {directory}')
+#        print('eg: python3 server.py ./')
+#        sys.exit()
+    taskList = db.SelectTasks()
+    for taskRecord in taskList:
+        for times in range(0,taskRecord[3]) :
+            breakFlag = 0
+            i = 0
+            while i<20 :
+                AutoTransAndCreate(taskRecord)
+                ret=send_file_code_fromDB(taskRecord)
+                if ret['status']==200 :
+                    print('Send file succeed. status:%d'%ret['status'])
+                    break
+                if ret['status']==500 :
+                    if '每日可发文上限为' in ret['msg']:
+                        print('Exceeding the maximum number of transmissions. status:%d'%ret['status'])
+                        breakFlag = 1
+                        break
+                i=i+1
+            if i>=20 :
+                print('Send alert email!')
+            if breakFlag == 1 :
                 break
-        i=i+1
-    if i>=20 :
-       print('Send alert email!')
