@@ -80,7 +80,7 @@ class MyMysql(object):
 
     def SelectTasks(self):
         #sql = 'select taskID, userID, productID, times, first_keywords, second_keywords, third_keywords from tasks where status = 1'
-        sql = 'select t.taskID, t.userID, t.productID, t.times, t.first_keywords, t.second_keywords, t.third_keywords, u.userAuth, u.userCookie, u.userUA from tasks t inner join users u where t.status = 1 and t.userID = u.userID'
+        sql = 'select t.taskID, t.userID, t.productID, t.times, t.first_keywords, t.second_keywords, t.third_keywords, u.userAuth, u.userCookie, u.userUA, u.userSN from tasks t inner join users u where t.status = 1 and t.userID = u.userID'
         try:
             self.cursor.execute(sql)
             results = self.cursor.fetchall()

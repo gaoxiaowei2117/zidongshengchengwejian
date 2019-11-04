@@ -86,12 +86,12 @@ def TitleAndKeys(taskRecord):
     key1 = ''.join(first+second+third_1)
     key2 = ''.join(first+second)
     key3 = ''.join(first+second+third_2)
-    print(title,key1,key2,key3)
+    #print(title,key1,key2,key3)
     return (title,key1,key2,key3)
 
 def AutoTransAndCreate(taskRecord):
     phasesList = list(db.SelectPassages(str(taskRecord[1]), str(taskRecord[2])))
-    print(type(phasesList))
+    #print(type(phasesList))
     picturesList = db.SelectPicture(str(taskRecord[1]), str(taskRecord[2]))
     productList = db.SelectProduct(str(taskRecord[1]), str(taskRecord[2]))
 
@@ -130,10 +130,12 @@ def AutoTransAndCreate(taskRecord):
     randomKeyWord=''
     while(len(randomKeyWord)==0):
         randomKeyWord=random.choice(productList)
-    print(randomKeyWord, type(randomKeyWord))
+    #print(randomKeyWord, type(randomKeyWord))
     f= open(fileName,'w',encoding='utf8')
     for eachline in alllines:
         a=re.sub('12358436',randomKeyWord,eachline)
+        #print('-------------------',taskRecord[10]);
+        a=re.sub('12358437',taskRecord[10],eachline)
         a=a.replace('{title_test}',title)
         a=a.replace('{testKey1}',key1)
         a=a.replace('{testKey2}',key2)
